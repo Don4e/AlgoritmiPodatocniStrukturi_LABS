@@ -1,0 +1,140 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.NoSuchElementException;
+/*
+Да се напише алгоритам кој ќе врши евалуација на израз во постфикс нотација.
+На влез се чита низа од знаци за изразот (стринг), а на излез се печати вредноста на изразот по евалуацијата.
+Име на класата (Java): PostFixEvaluation</p>
+
+For example:
+
+Input
+1 2 +
+
+Result
+3
+*/
+interface Stack<E> {
+
+    // Elementi na stekot se objekti od proizvolen tip.
+
+    // Metodi za pristap:
+
+    public boolean isEmpty ();
+    // Vrakja true ako i samo ako stekot e prazen.
+
+    public E peek ();
+    // Go vrakja elementot na vrvot od stekot.
+
+    // Metodi za transformacija:
+
+    public void clear ();
+    // Go prazni stekot.
+
+    public void push (E x);
+    // Go dodava x na vrvot na stekot.
+
+    public E pop ();
+    // Go otstranuva i vrakja elementot shto e na vrvot na stekot.
+}
+
+class ArrayStack<E> implements Stack<E> {
+    private E[] elems;
+    private int depth;
+
+    @SuppressWarnings("unchecked")
+    public ArrayStack (int maxDepth) {
+        // Konstrukcija na nov, prazen stek.
+        elems = (E[]) new Object[maxDepth];
+        depth = 0;
+    }
+
+
+    public boolean isEmpty () {
+        // Vrakja true ako i samo ako stekot e prazen.
+        return (depth == 0);
+    }
+
+
+    public E peek () {
+        // Go vrakja elementot na vrvot od stekot.
+        if (depth == 0)
+            throw new NoSuchElementException();
+        return elems[depth-1];
+    }
+
+
+    public void clear () {
+        // Go prazni stekot.
+        for (int i = 0; i < depth; i++)  elems[i] = null;
+        depth = 0;
+    }
+
+
+    public void push (E x) {
+        // Go dodava x na vrvot na stekot.
+        elems[depth++] = x;
+    }
+
+
+    public E pop () {
+        // Go otstranuva i vrakja elementot shto e na vrvot na stekot.
+        if (depth == 0)
+            throw new NoSuchElementException();
+        E topmost = elems[--depth];
+        elems[depth] = null;
+        return topmost;
+    }
+}
+
+public class PostFixEvaluation {
+
+    static int evaluatePostfix(char [] izraz, int n)
+    {
+        //YOUR CODE HERE
+        ArrayStack<Integer> stak4e=new ArrayStack<>(15);
+        String tmp="";
+        int broj1;
+        int broj2;
+        for(int i=0;i<n;i++){
+            tmp="";
+            if(izraz[i]=='+'){
+                stak4e.push(stak4e.pop()+stak4e.pop());
+            } else if (izraz[i]=='-') {
+                broj2=stak4e.pop();             //na vrvot na stackot e vtoriot operand pa mora da koristime 2 pomosni promenlivi
+                broj1=stak4e.pop();
+                stak4e.push(broj1-broj2);
+            }else if (izraz[i]=='*') {
+                stak4e.push(stak4e.pop()*stak4e.pop());    //ne e biten koj e prv koj vtor operand kaj mnozenje
+            }else if (izraz[i]=='/') {
+                broj2=stak4e.pop();
+                broj1=stak4e.pop();
+                stak4e.push(broj1/broj2);
+            }
+            else if(izraz[i]!=' '){
+                while (izraz[i]>='0'&&izraz[i]<='9'){   //gi lepime cifrite edna po edna na prazniot string tmp, i na kraj go imame celiot broj vo tmp
+                    tmp+=izraz[i];
+                    i++;
+                }
+                stak4e.push(Integer.parseInt(tmp));
+//                System.out.println(tmp);    //print broj za vo stack
+            }
+        }
+        return stak4e.pop();
+    }
+
+    public static void main(String[] args) throws Exception{
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        String expression = br.readLine();
+        char exp[] = expression.toCharArray();
+
+        int rez = evaluatePostfix(exp, exp.length);
+        System.out.println(rez);
+
+        br.close();
+
+    }
+
+}
