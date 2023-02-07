@@ -1,0 +1,74 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Stack;
+
+public class ArithmeticExpression {
+   /* Даден е некој аритметички израз. Аритметичкиот израз е во облик (A+B) или (A-B) каде што А и B истовремено се
+   други аритметички изрази или цифри од 0-9. Потребно е да го евалуирате дадениот израз.
+
+    Име на класата (Java): ArithmeticExpression
+
+
+    For example:
+
+        Input  (1+2)
+        Result  3
+*/
+    // funkcija za presmetuvanje na izrazot pocnuvajki
+    // od indeks l, zavrsuvajki vo indeks r
+
+    static int presmetaj(char izraz[], int l, int r) {
+        String tmp=izraz.toString();
+        int prvBroj;
+        Stack<Character> stak4e=new Stack<>();
+        Stack<Integer> broevi=new Stack<>();
+        String broj4e="";
+        int result=0;
+
+        for(int i=0;i<izraz.length;i++){
+            if(izraz[i]!=')'){
+                if(izraz[i]>='0'&&izraz[i]<='9'){
+                    broevi.push(Character.getNumericValue(izraz[i]));
+                }
+                else {
+                    stak4e.push(izraz[i]);
+                }
+            }
+            else {                      //ako ima zatvorena zagrada treba da presmetame
+                int broj2=broevi.pop();
+                int broj1=broevi.pop();
+                if(stak4e.peek()=='+'){
+                    broevi.push(broj1+broj2);
+//                    System.out.println(broj1+" "+stak4e.peek()+ " "+broj2);
+                }
+                else {
+                    broevi.push(broj1-broj2);
+//                    System.out.println(broj1+" "+stak4e.peek()+ " "+broj2);
+                }
+                stak4e.pop();       //izvadi go znakot + ili minus od stak4e
+                stak4e.pop();       //izvadi ja i otvorenata zagrada od stak4e
+            }
+
+
+        }
+
+        return broevi.peek();
+    }
+
+    public static void main(String[] args) throws Exception {
+        int i,j,k;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        String expression = br.readLine();
+        char exp[] = expression.toCharArray();
+
+        int rez = presmetaj(exp, 0, exp.length-1);
+        System.out.println(rez);
+
+        br.close();
+
+    }
+
+}
+
