@@ -1,0 +1,60 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+/*Дадена е низа со N природни броеви. Треба да се сортира низата така што во првиот дел од низата ќе бидат подредени непарните броеви од неа во
+растечки редослед, а во вториот дел парните броеви во опаѓачки редослед. Во првиот ред од влезот даден е бројот на елементи во низата N, а во
+ вториот ред се дадени броевите. На излез треба да се испечати сортираната низа.
+Име на класата: OddEvenSort
+
+For example:
+Input
+7
+2 5 3 5 8 6 10
+
+Result
+3 5 5 10 8 6 2
+*/
+public class OddEvenSort {
+
+    static void oddEvenSort(int arr[], int n)
+    {
+        // Vasiot kod tuka
+        int tmp;
+        for(int i=n-1;i>0;i--){
+            for(int j=i-1;j>=0;j--){
+                if(arr[j]%2==0&&arr[j]<arr[i]||arr[i]%2!=0&&arr[j]%2==0){ //najgolemi parni broevi se redat od n-1
+                    tmp=arr[i];
+                    arr[i]=arr[j];
+                    arr[j]=tmp;
+                }
+            }
+            if(arr[i]%2!=0){                     //ako a[i] e neparen znaci nema parni broevi levo od nego so koi mozel da se smeni i sega 
+                for(int j=i;j>=0;j--){             //samo se redat neparnite broevi od najgolem do najmal pocnuvajki od prviot najden paren
+                    if(arr[j]>arr[i]){
+                        tmp=arr[i];
+                        arr[i]=arr[j];
+                        arr[j]=tmp;
+                    }
+                }
+            }
+        }
+
+    }
+
+    public static void main(String[] args) throws IOException{
+        int i;
+        BufferedReader stdin = new BufferedReader( new InputStreamReader(System.in));
+        String s = stdin.readLine();
+        int n = Integer.parseInt(s);
+
+        s = stdin.readLine();
+        String [] pom = s.split(" ");
+        int [] a = new int[n];
+        for(i=0;i<n;i++)
+            a[i]=Integer.parseInt(pom[i]);
+        oddEvenSort(a,n);
+        for(i=0;i<n-1;i++)
+            System.out.print(a[i]+" ");
+        System.out.print(a[i]);
+    }
+}
