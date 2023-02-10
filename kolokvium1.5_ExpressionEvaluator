@@ -1,0 +1,66 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Stack;
+/*Да се напише алгоритам кој ќе пресметува (евалуира) математички израз составен од броеви и операциите за собирање (+) и множење (*).
+Забелешка: Операцијата множење има предност пред операцијата собирање.
+
+For example:
+
+Input
+2+2*2*2*2*2*2+2*2
+Result
+70
+
+*/
+public class ExpressionEvaluator {
+
+    public static int evaluateExpression(String expression){
+        // Vasiot kod tuka
+        Stack<Integer> stack4e=new Stack<>();
+        int result=0, firstOperand, secondOperand;
+        String number="";
+        boolean flag=false;
+        for(int i=0;i<expression.length();i++){
+            if(expression.charAt(i)<'0'||expression.charAt(i)>'9'){           //dali znakot i e operator
+                if(expression.charAt(i)=='*')                                  //ako operatorot e * stavame flag na true bidejkji treba da se izvrsi operacijata
+                    flag=true;
+                i++;                                                            //odi na sledniot karakter koj kje e vtor operand
+            }
+            while(i<expression.length()&&expression.charAt(i)>='0'&&expression.charAt(i)<='9'){         //go zemamme brojot kako string i posle go stavame vo int stack
+                number+=expression.charAt(i);
+                i++;
+            }
+            i--;                                                    //po zavrsuvanje na while i kje e na operator i mora da go vratime na broj bidejkji for ciklusot go zgolemuva i
+            stack4e.push(Integer.parseInt(number));                     //site operandi se cuvaat vo stak4eto
+            number="";
+            if(flag){                                                       //ako flag e true imame mnozenje pa vadime 2 operandi od stak4e, gi mnozime, i rezultatot pak se vrakja vo stack
+                flag=false;
+                firstOperand=stack4e.pop();
+                if(stack4e.isEmpty()) {                                   //ako prviot operator od izrazot e mnozenje imame samo eden operand vo stak4e i mora da go zememe i sledniot operand posle mnozenjeto
+                    i++;
+                    while(i<expression.length()&&expression.charAt(i)>='0'&&expression.charAt(i)<='9'){
+                        number+=expression.charAt(i);
+                        i++;
+                    }
+                    i--;
+                    stack4e.push(Integer.parseInt(number));
+                    number="";
+                }
+                    secondOperand = stack4e.pop();
+//                System.out.println(firstOperand+" "+secondOperand);
+                stack4e.push(firstOperand*secondOperand);
+
+            }
+        }
+        while (!stack4e.isEmpty()){
+            result+=stack4e.pop();
+        }
+        return result;
+    }
+    public static void main(String[] args) throws IOException {
+        BufferedReader input=new BufferedReader(new InputStreamReader(System.in));
+        System.out.println(evaluateExpression(input.readLine()));
+    }
+
+}
