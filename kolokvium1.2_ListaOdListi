@@ -198,7 +198,6 @@ public class ListaOdListi {
                 suma+=tmp.element;
                 tmp=tmp.succ;
             }
-            System.out.println(suma);
             proizvod*=suma;
             listi4ka=listi4ka.succ;                                 //sledna lista
         }
