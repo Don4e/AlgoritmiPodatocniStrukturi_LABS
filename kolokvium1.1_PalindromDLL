@@ -160,7 +160,6 @@ public class PalindromeDLL {
         DLLNode<Integer> pocetok=list.getFirst();
         DLLNode<Integer> kraj=list.getLast();
         for(int i=0;i<n/2;i++){
-            System.out.println(pocetok.element+" "+ kraj.element);
             if(pocetok.element!=kraj.element)
                 return -1;
             pocetok=pocetok.succ;
