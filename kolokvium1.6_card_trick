@@ -1,0 +1,261 @@
+import com.sun.source.tree.WhileLoopTree;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
+class DLLNode<E> {
+    protected E element;
+    protected DLLNode<E> pred, succ;
+    public DLLNode(E elem, DLLNode<E> pred, DLLNode<E> succ) {
+        this.element = elem;
+        this.pred = pred;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+
+class DLL<E> {
+    private DLLNode<E> first, last;
+
+    public DLL() {
+        // Construct an empty SLL
+        this.first = null;
+        this.last = null;
+    }
+
+    public void insertFirst(E o) {
+        DLLNode<E> ins = new DLLNode<E>(o, null, first);
+        if (first == null)
+            last = ins;
+        else
+            first.pred = ins;
+        first = ins;
+    }
+
+    public void insertLast(E o) {
+        if (first == null)
+            insertFirst(o);
+        else {
+            DLLNode<E> ins = new DLLNode<E>(o, last, null);
+            last.succ = ins;
+            last = ins;
+        }
+    }
+
+    public void insertAfter(E o, DLLNode<E> after) {
+        if (after == last) {
+            insertLast(o);
+            return;
+        }
+        DLLNode<E> ins = new DLLNode<E>(o, after, after.succ);
+        after.succ.pred = ins;
+        after.succ = ins;
+    }
+
+    public void insertBefore(E o, DLLNode<E> before) {
+        if (before == first) {
+            insertFirst(o);
+            return;
+        }
+        DLLNode<E> ins = new DLLNode<E>(o, before.pred, before);
+        before.pred.succ = ins;
+        before.pred = ins;
+    }
+
+    public E deleteFirst() {
+        if (first != null) {
+            DLLNode<E> tmp = first;
+            first = first.succ;
+            if (first != null) first.pred = null;
+            if (first == null)
+                last = null;
+            return tmp.element;
+        } else
+            return null;
+    }
+
+    public E deleteLast() {
+        if (first != null) {
+            if (first.succ == null)
+                return deleteFirst();
+            else {
+                DLLNode<E> tmp = last;
+                last = last.pred;
+                last.succ = null;
+                return tmp.element;
+            }
+        } else
+            return null;
+    }
+
+    public E delete(DLLNode<E> node) {
+        if (node == first) {
+            return deleteFirst();
+        }
+        if (node == last) {
+            return deleteLast();
+        }
+        node.pred.succ = node.succ;
+        node.succ.pred = node.pred;
+        return node.element;
+
+    }
+
+    public DLLNode<E> find(E o) {
+        if (first != null) {
+            DLLNode<E> tmp = first;
+            while (!tmp.element.equals(o) && tmp.succ != null)
+                tmp = tmp.succ;
+            if (tmp.element.equals(o)) {
+                return tmp;
+            } else {
+                System.out.println("Elementot ne postoi vo listata");
+            }
+        } else {
+            System.out.println("Listata e prazna");
+        }
+        return null;
+    }
+
+    public void deleteList() {
+        first = null;
+        last = null;
+    }
+
+    public int getSize() {
+        int listSize = 0;
+        DLLNode<E> tmp = first;
+        while(tmp != null) {
+            listSize++;
+            tmp = tmp.succ;
+        }
+        return listSize;
+    }
+
+    @Override
+    public String toString() {
+        String ret = new String();
+        if (first != null) {
+            DLLNode<E> tmp = first;
+            ret += tmp.toString();
+            while (tmp.succ != null) {
+                tmp = tmp.succ;
+                ret += "<->" + tmp.toString();
+            }
+        } else
+            ret = "Prazna lista!!!";
+        return ret;
+    }
+
+    public String toStringR() {
+        String ret = new String();
+        if (last != null) {
+            DLLNode<E> tmp = last;
+            ret += tmp.toString();
+            while (tmp.pred != null) {
+                tmp = tmp.pred;
+                ret += "<->" + tmp.toString();
+            }
+        } else
+            ret = "Prazna lista!!!";
+        return ret;
+    }
+
+    public DLLNode<E> getFirst() {
+        return first;
+    }
+
+    public DLLNode<E> getLast() {
+
+        return last;
+    }
+
+    public void setFirst(DLLNode<E> node) {
+        this.first = node;
+    }
+
+    public void setLast(DLLNode<E> node) {
+        this.last = node;
+    }
+
+    public void mirror() {
+
+        DLLNode<E> tmp = null;
+        DLLNode<E> current = first;
+        last = first;
+        while(current!=null) {
+            tmp = current.pred;
+            current.pred = current.succ;
+            current.succ = tmp;
+            current = current.pred;
+        }
+
+        if(tmp!=null && tmp.pred!=null) {
+            first=tmp.pred;
+        }
+    }
+}
+/*Перо прави трик со карти. Тој има шпил од 51-на карта (некој некогаш не му вратил една) од којшто ви дозволува да влечете карта.
+Тој, за трикот да биде веродостоен, не ја знае картата, но знае на која позиција се наоѓа. Мааната на Перо е тоа што тој не знае
+регуларно да измеша карти, туку ги зема првите седум карти, им им го превртува редоследот (пр. од 1 2 3 4 5 6 7 ги реди во 7 6 5 4 3 2 1),
+потоа зема една карта од превртените и една од врвот од шпилот и го става на крајот од шпилот, така се додека не ги потроши сите седум карти.
+Со тоа остварува едно мешање на шпил. Ваша задача е, да изработите симулцаија на ваквото мешање, такашто за дадена N-та карта т.ш. 1<=N<=51,
+вие ќе му изброите колку вакви мешања треба тој да направи за на врв на шпилот да дојде извлечената карта.
+
+For example:
+
+Input
+15
+Result
+1
+*/
+public class card_trick {
+    public static int count(int N){
+        // Vasiot kod tuka
+        DLL<Integer> listi4ka=new DLL<>();
+
+        Stack<Integer> stak4e=new Stack<>();                //prvite 7 karti gi stavame vo stack za koga kje gi vadime da se vo obraten redosled FILO
+        Queue<Integer> sedumKarti=new LinkedList<>();       //slednite 7karti se vo redica za da gi vadime kako sto sme gi stavale vo redicata  FIFO
+        for(int i=0;i<51;i++){
+            listi4ka.insertLast(i+1);
+        }
+        int counter=0;
+        while(listi4ka.getFirst().element!=N){
+            counter++;
+            for(int j=0;j<7;j++){                           //prvi 7 karti vo stackot
+                stak4e.push(listi4ka.getFirst().element);
+//                System.out.println("Stack pocetok: "+listi4ka.getFirst().element);
+                listi4ka.deleteFirst();
+            }
+            for(int j=0;j<7;j++){                            //sledni 7 karti vo queue
+                sedumKarti.add(listi4ka.getFirst().element);
+//                System.out.println("Stack kraj: "+listi4ka.getLast().element);
+                listi4ka.deleteFirst();
+            }
+            for(int j=0;j<7;j++){
+                listi4ka.insertLast(stak4e.pop());                  //edna karta od prevrtenite ja dodavame na kraj
+                listi4ka.insertLast(sedumKarti.remove());           //edna karta od ostanatite 7  ja dodavame na kraj
+
+            }
+        }
+/*        DLLNode<Integer>tmp=listi4ka.getFirst();
+        for(int i=0;i<51;i++){
+            System.out.print(tmp.element+ " ");
+            tmp=tmp.succ;
+        }
+        System.out.println();*/
+        return counter;
+    }
+
+    public static void main(String[] args) throws NumberFormatException, IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in) );
+        System.out.println(count(Integer.parseInt(br.readLine())));
+    }
+
+}
